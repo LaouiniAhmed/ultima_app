@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ultima_application/screens/public/login_screen.dart';
+import 'package:ultima_application/screens/public/register_screen.dart'; 
+import 'package:ultima_application/screens/public/dashboard_screen.dart';
+import 'package:ultima_application/screens/public/forgot_password_screen.dart'; // <--- 1. Zid el import hedha!
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,9 +23,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Center(child: Text('ULTIMA : Connexion OK')),
+      title: 'ULTIMA',
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.black,
       ),
+      
+      initialRoute: '/',
+
+      routes: {
+        '/': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/dashboard': (context) => const DashboardScreen(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(), // <--- 2. Zid el route hedhi hna!
+      },
     );
   }
 }
