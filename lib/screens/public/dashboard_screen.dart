@@ -1,208 +1,222 @@
 import 'package:flutter/material.dart';
+import 'package:ultima_application/screens/public/mymatches_screen.dart';
+import 'package:ultima_application/screens/public/mystats_screen.dart';
+import 'package:ultima_application/screens/public/hydration_screen.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF020406), // Dark background
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              const Center(
-                child: Text(
-                  "ULTIMA",
-                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 8),
-                ),
-              ),
-              const SizedBox(height: 30),
-              const Text("Welcome Back", style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
-              const Text("Track your performance and stay hydrated", style: TextStyle(color: Colors.grey, fontSize: 14)),
-              
-              const SizedBox(height: 25),
-
-              // Current Match Card (Neon Green Style)
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0D141C),
-                  borderRadius: BorderRadius.circular(25),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text("Current Match", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(color: Colors.green.withOpacity(0.2), borderRadius: BorderRadius.circular(10)),
-                          child: const Row(
-                            children: [
-                              CircleAvatar(radius: 3, backgroundColor: Colors.green),
-                              SizedBox(width: 5),
-                              Text("LIVE", style: TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildScoreTeam("You", "2", Colors.green),
-                        _buildScoreTeam("Salma Ayari", "1", Colors.white),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    const Divider(color: Colors.white10),
-                    const SizedBox(height: 10),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _MatchDetail(label: "COURT", value: "Court 3"),
-                        _MatchDetail(label: "TIME", value: "43:15"),
-                        _MatchDetail(label: "TYPE", value: "Best of 3"),
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-                    
-                    // View Full Match Button
-                    SizedBox(
-                      width: 200,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.pushNamed(context, '/full-match'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF39FF14), // Neon Green
-                          shape: const StadiumBorder(),
-                          elevation: 10,
-                          shadowColor: const Color(0xFF39FF14).withOpacity(0.4),
-                        ),
-                        child: const Text("View Full Match", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Stats Grid (Using a helper widget)
-              Row(
-                children: [
-                  _buildStatCard("Matches", "12", "This month", Icons.calendar_today, Colors.green),
-                  const SizedBox(width: 15),
-                  _buildStatCard("Wins", "8", "+15 vs last month", Icons.emoji_events_outlined, Colors.cyan),
-                ],
-              ),
-              const SizedBox(height: 15),
-              Row(
-                children: [
-                  _buildStatCard("Active Matches", "8", "+2 from yesterday", Icons.bolt, Colors.greenAccent),
-                  const SizedBox(width: 15),
-                  _buildStatCard("Average Time", "45m", "Per match", Icons.timer_outlined, Colors.orangeAccent),
-                ],
-              ),
-
-              const SizedBox(height: 30),
-              const Text("Upcoming Matches", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 15),
-
-              // Upcoming Matches List
-              _buildUpcomingMatch("Today - 9:00 PM", "Court 2 - vs Ahmed Ayari"),
-              _buildUpcomingMatch("Tomorrow - 3:30 PM", "Court 4 - vs Sara Ben-ali"),
-            ],
+      // On met le fond du Scaffold en transparent pour voir le dégradé du Container
+      backgroundColor: Colors.transparent, 
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            // Couleurs extraites de la page Ultima
+            colors: [Color(0xFF142B2B), Color(0xFF0D141C)], 
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildScoreTeam(String name, String score, Color color) {
-    return Column(
-      children: [
-        Text(name, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-        const SizedBox(height: 5),
-        Text(score, style: TextStyle(color: color, fontSize: 48, fontWeight: FontWeight.bold)),
-      ],
-    );
-  }
-
-  Widget _buildStatCard(String title, String value, String subtitle, IconData icon, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF0D141C),
-          borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 15),
-            Text(title, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-            const SizedBox(height: 5),
-            Text(value, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 5),
-            Text(subtitle, style: const TextStyle(color: Colors.white38, fontSize: 10)),
+            const SizedBox(height: 50),
+            
+            // Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF00FFCC), size: 22),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const Text("CLUB DASHBOARD", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // --- TABBAR WITH ICONS ---
+            TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start, 
+              indicatorColor: const Color(0xFF00FFCC),
+              labelColor: const Color(0xFF00FFCC),
+              unselectedLabelColor: Colors.white38,
+              indicatorWeight: 3,
+              labelPadding: const EdgeInsets.symmetric(horizontal: 15),
+              tabs: const [
+                Tab(icon: Icon(Icons.dashboard_rounded, size: 20), text: "Overview"),
+                Tab(icon: Icon(Icons.sports_tennis_rounded, size: 20), text: "My Matches"),
+                Tab(icon: Icon(Icons.analytics_outlined, size: 20), text: "My Stats"),
+                Tab(icon: Icon(Icons.water_drop_rounded, size: 20), text: "Hydration"),
+              ],
+            ),
+
+            // TabBarView: CONTENT AREA
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                physics: const BouncingScrollPhysics(),
+                children: [ 
+                  const OverviewContent(), 
+                  MyMatchesScreen(), 
+                  MyStatsScreen(),   
+                  HydrationScreen(), 
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildUpcomingMatch(String time, String detail) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0D141C),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+// --- OVERVIEW CONTENT (TABLEAUX & STATUS CARDS) ---
+class OverviewContent extends StatelessWidget {
+  const OverviewContent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          const Text("Club Overview", 
+            style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+          const Text("Real-time club performance and activity.", 
+            style: TextStyle(color: Colors.white54, fontSize: 12)),
+          
+          const SizedBox(height: 25),
+
+          // 1. Grid mta3 el Status Cards
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            mainAxisSpacing: 15,
+            crossAxisSpacing: 15,
+            childAspectRatio: 1.4,
             children: [
-              Text(time, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-              Text(detail, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+              _buildStatCard("Active Matches", "0", Icons.access_time_filled, Colors.greenAccent),
+              _buildStatCard("Available Courts", "0/0", Icons.grid_view_rounded, Colors.blueAccent),
+              _buildStatCard("Today's Matches", "0", Icons.calendar_today, Colors.orangeAccent),
+              _buildStatCard("Hydration Usage", "0L", Icons.water_drop, Colors.cyanAccent),
             ],
           ),
-          OutlinedButton(
-            onPressed: () {},
-            style: OutlinedButton.styleFrom(
-              side: const BorderSide(color: Colors.green),
-              shape: const StadiumBorder(),
+
+          const SizedBox(height: 25),
+
+          // 2. Section Live Feed
+          _buildSectionBox(
+            title: "Live Feed",
+            icon: Icons.flash_on,
+            iconColor: Colors.greenAccent,
+            child: const Padding(
+              padding: EdgeInsets.symmetric(vertical: 40),
+              child: Center(
+                child: Text("No live matches in progress.", 
+                  style: TextStyle(color: Colors.white24, fontSize: 13)),
+              ),
             ),
-            child: const Text("Details", style: TextStyle(color: Colors.green, fontSize: 11)),
-          )
+          ),
+
+          const SizedBox(height: 20),
+
+          // 3. Peak Hours Analysis
+          _buildSectionBox(
+            title: "Peak Hours Analysis",
+            icon: Icons.bar_chart_rounded,
+            iconColor: Colors.purpleAccent,
+            child: Container(
+              height: 150,
+              alignment: Alignment.center,
+              child: const Text("WAITING FOR USAGE DATA...", 
+                style: TextStyle(color: Colors.white24, fontSize: 11, letterSpacing: 2)),
+            ),
+          ),
         ],
       ),
     );
   }
-}
 
-class _MatchDetail extends StatelessWidget {
-  final String label, value;
-  const _MatchDetail({required this.label, required this.value});
+  // Helper Widget lel Stat Cards
+  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A222C).withOpacity(0.7), // Harmonisé avec Ultima
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Icon(icon, color: color, size: 18),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(value, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+              Text(title, style: const TextStyle(color: Colors.white38, fontSize: 10)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(label, style: const TextStyle(color: Colors.white38, fontSize: 10)),
-        const SizedBox(height: 5),
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-      ],
+  // Helper Widget lel Sections el kbar
+  Widget _buildSectionBox({required String title, required IconData icon, required Color iconColor, required Widget child}) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A222C).withOpacity(0.7), // Harmonisé avec Ultima
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: Row(
+              children: [
+                Icon(icon, color: iconColor, size: 18),
+                const SizedBox(width: 10),
+                Text(title, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+          child,
+        ],
+      ),
     );
   }
 }
